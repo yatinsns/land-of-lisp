@@ -1,0 +1,40 @@
+;; Dribble of #<IO TERMINAL-STREAM> started on 2015-11-30 19:56:28.
+#<OUTPUT BUFFERED FILE-STREAM CHARACTER #P"chapter-2.txt">
+[2]> (defparameter *big* 100)
+*BIG*
+[3]> *big*
+100
+[4]> (defparameter *small* 1)
+*SMALL*
+[5]> *small*
+1
+[6]> (defun guess-my-number ()
+(ash (+ *small* *big*) -1)
+)
+GUESS-MY-NUMBER
+[7]> (defun smaller-number ()
+(defparameter *big* (1- (guess-my-number)))
+(guess-my-number)
+)
+BIG-NUMBER
+[8]> (defun bigger-number ()
+(defparameter *small* (1+ (guess-my-number)))
+(guess-my-number)
+)
+SMALL-NUMBER
+[9]> (guess-my-number)
+50
+[10]> (bigger-number)
+75
+[11]> (bigger-number)
+88
+[12]> (smaller-number)
+81
+[13]> (bigger-number)
+84
+[14]> (bigger-number)
+86
+[15]> (bigger-number)
+87
+[16]> 
+Bye.
