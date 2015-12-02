@@ -1,0 +1,323 @@
+;; Dribble of #<IO TERMINAL-STREAM> started on 2015-12-02 01:07:49.
+#<OUTPUT BUFFERED FILE-STREAM CHARACTER #P"chapter-5.txt">
+[2]> (defparameter *nodes* '((living-room (you are in the living room. A wizard is snoring loudly on the crouch))
+                             (garden (you are in beautiful garden. There is a well in front of you))
+                             (attic (you are in the attic. There is a giant welding torch in the corner.))))
+*NODES*
+[3]> (assoc 'garden *nodes*)
+(GARDEN (YOU ARE IN BEAUTIFUL GARDEN. THERE IS A WELL IN FRONT OF YOU))
+[4]> (defun describe-location (location nodes)
+            ((cadr (assoc location nodes)))
+)
+
+*** - SYSTEM::%EXPAND-FORM: (CADR (ASSOC LOCATION NODES)) should be a lambda expression
+The following restarts are available:
+ABORT          :R1      Abort main loop
+Break 1 [5]> :q
+[6]> (defun describe-location (location nodes)
+            (cadr (assoc location nodes))
+)
+DESCRIBE-LOCATION
+[7]> (describe-location 'garden *nodes*)
+(YOU ARE IN BEAUTIFUL GARDEN. THERE IS A WELL IN FRONT OF YOU)
+[8]> (describe-location 'attic *nodes*)
+(YOU ARE IN THE ATTIC. THERE IS A GIANT WELDING TORCH IN THE CORNER.)
+[9]> 
+
+
+
+
+
+
+(def parameter *edges* ((living-room (garden west door) (attic upstairs ladder))
+                        ()
+:q
+
+*** - Ctrl-C: User break
+The following restarts are available:
+ABORT          :R1      Abort main loop
+Break 1 [10]> :q
+[11]> (def parameter *edges* '((living-room (garden west door) (attic upstairs ladder))
+                               (garden (living-room east door))
+                               (attic (living-room downstairs ladder))))
+
+*** - EVAL: undefined function DEF
+The following restarts are available:
+USE-VALUE      :R1      Input a value to be used instead of (FDEFINITION 'DEF).
+RETRY          :R2      Retry
+STORE-VALUE    :R3      Input a new value for (FDEFINITION 'DEF).
+ABORT          :R4      Abort main loop
+Break 1 [12]> (defparameter *edges* '((living-room (garden west door) (attic upstairs ladder))
+                               (garden (living-room east door))
+                               (attic (living-room downstairs ladder))))
+*EDGES*
+Break 1 [12]> (defun describe-path (edge)
+                  `(there is a ,(caddr edge) going ,(cadr edge) from here.))
+DESCRIBE-PATH
+Break 1 [12]> :q
+[13]> (describe-path '(garden west door))
+(THERE IS A DOOR GOING WEST FROM HERE.)
+[14]> 
+
+(defun describe-paths (location edges)
+     (apply #'append (mapcar #'describe-path (cdr (assoc location edges)))))
+DESCRIBE-PATHS
+[15]> (describe-paths 'living-room)
+
+*** - EVAL/APPLY: Too few arguments (1 instead of at least 2) given to DESCRIBE-PATHS
+The following restarts are available:
+ABORT          :R1      Abort main loop
+Break 1 [16]> :q
+[17]> (describe-paths 'living-room *edges*)
+(THERE IS A DOOR GOING WEST FROM HERE. THERE IS A LADDER GOING UPSTAIRS FROM HERE.)
+[18]> 
+
+
+(defparameter *objects* '(whiskey bucket frog chain))
+*OBJECTS*
+[19]> (defparameter *object-locations* ((whiskey living-room)
+                                        (bucket living-room)
+                                        (chain garden)
+                                        (frog garden)))
+
+*** - EVAL: (WHISKEY LIVING-ROOM) is not a function name; try using a symbol instead
+The following restarts are available:
+USE-VALUE      :R1      Input a value to be used instead.
+ABORT          :R2      Abort main loop
+Break 1 [20]> (defparameter *object-locations* '((whiskey living-room)
+                                        (bucket living-room)
+                                        (chain garden)
+                                        (frog garden)))
+*OBJECT-LOCATIONS*
+Break 1 [20]> 
+
+:q
+[21]> 
+
+
+
+(defun objects-at (loc objs obj-locs)
+  (labels ((at-loc-p (obj)
+             (eq (cadr (assoc obj obj-locs)) loc)))
+    (remove-if-not #'at-loc-p objs)))
+OBJECTS-AT
+[22]> (objects-at 'garden *objects* *object-locations*)
+(FROG CHAIN)
+[23]> (objects-at 'attic *objects* *object-locations*)
+NIL
+[24]> (objects-at 'living-room *objects* *object-locations*)
+(WHISKEY BUCKET)
+[25]> 
+
+
+(defun describe-objects (loc objs obj-locs)
+  (labels ((describe-object (obj)
+             `(you see a ,(obj) on the floor))) 
+    (apply #'append (mapcar #'describe-object (objects-at (loc objs obj-locs))))))
+DESCRIBE-OBJECTS
+[26]> (describe-objects 'garden *objects* *object-locations*)
+
+*** - EVAL: undefined function LOC
+The following restarts are available:
+USE-VALUE      :R1      Input a value to be used instead of (FDEFINITION 'LOC).
+RETRY          :R2      Retry
+STORE-VALUE    :R3      Input a new value for (FDEFINITION 'LOC).
+ABORT          :R4      Abort main loop
+Break 1 [27]> (defun describe-objects (loc objs obj-locs)
+  (labels ((describe-object (obj)
+             `(you see a ,(obj) on the floor))) 
+    (apply #'append (mapcar #'describe-object (objects-at loc objs obj-locs)))))
+DESCRIBE-OBJECTS
+Break 1 [27]> (describe-objects 'garden *objects* *object-locations*)
+
+*** - EVAL: undefined function OBJ
+The following restarts are available:
+USE-VALUE      :R1      Input a value to be used instead of (FDEFINITION 'OBJ).
+RETRY          :R2      Retry
+STORE-VALUE    :R3      Input a new value for (FDEFINITION 'OBJ).
+ABORT          :R4      Abort debug loop
+ABORT          :R5      Abort main loop
+Break 2 [28]> :q
+[29]> (defun describe-objects (loc objs obj-locs)
+  (labels ((describe-object (obj)
+             `(you see a ,(obj) on the floor))) 
+    (apply #'append (mapcar #'describe-object (objects-at loc objs obj-locs)))))
+DESCRIBE-OBJECTS
+[30]> (describe-objects 'garden *objects* *object-locations*)
+
+*** - EVAL: undefined function OBJ
+The following restarts are available:
+USE-VALUE      :R1      Input a value to be used instead of (FDEFINITION 'OBJ).
+RETRY          :R2      Retry
+STORE-VALUE    :R3      Input a new value for (FDEFINITION 'OBJ).
+ABORT          :R4      Abort main loop
+Break 1 [31]> :q
+[32]> (defun describe-objects (loc objs obj-locs)
+  (labels ((describe-object (obj)
+             `(you see a ,obj on the floor))) 
+    (apply #'append (mapcar #'describe-object (objects-at loc objs obj-locs)))))
+DESCRIBE-OBJECTS
+[33]> (describe-objects 'garden *objects* *object-locations*)
+(YOU SEE A FROG ON THE FLOOR YOU SEE A CHAIN ON THE FLOOR)
+[34]> 
+
+(defparameter *location* 'living-room)
+*LOCATION*
+[35]> *location*
+LIVING-ROOM
+[36]> 
+
+
+(defun look ()
+  (append (describe-location *location* *nodes*)
+          (describe-paths *location* *edges*)
+          (describe-objects *location* *objects* *object-locations*)))
+LOOK
+[37]> look
+
+*** - SYSTEM::READ-EVAL-PRINT: variable LOOK has no value
+The following restarts are available:
+USE-VALUE      :R1      Input a value to be used instead of LOOK.
+STORE-VALUE    :R2      Input a new value for LOOK.
+ABORT          :R3      Abort main loop
+Break 1 [38]> (look)
+(YOU ARE IN THE LIVING ROOM. A WIZARD IS SNORING LOUDLY ON THE CROUCH THERE IS A DOOR
+ GOING WEST FROM HERE. THERE IS A LADDER GOING UPSTAIRS FROM HERE. YOU SEE A WHISKEY ON
+ THE FLOOR YOU SEE A BUCKET ON THE FLOOR)
+Break 1 [38]> :q
+[39]> (look)
+(YOU ARE IN THE LIVING ROOM. A WIZARD IS SNORING LOUDLY ON THE CROUCH THERE IS A DOOR
+ GOING WEST FROM HERE. THERE IS A LADDER GOING UPSTAIRS FROM HERE. YOU SEE A WHISKEY ON
+ THE FLOOR YOU SEE A BUCKET ON THE FLOOR)
+[40]> 
+
+
+(find 'y '((5 x) (3 y) (2 z)) :key #'cadr)
+(3 Y)
+[41]> 
+
+
+
+
+(defun walk (direction)
+  (let ((next (find direction (cdr (assoc *location* *nodes*)) :key #'cadr)))
+    (if next
+      (progn (setf *location* (car next))
+             (look))
+      '(you cannot go that way)
+    )))
+WALK
+[42]> (walk west)
+
+*** - SYSTEM::READ-EVAL-PRINT: variable WEST has no value
+The following restarts are available:
+USE-VALUE      :R1      Input a value to be used instead of WEST.
+STORE-VALUE    :R2      Input a new value for WEST.
+ABORT          :R3      Abort main loop
+Break 1 [43]> (walk 'west)
+(YOU CANNOT GO THAT WAY)
+Break 1 [43]> (walk 'upstairs)
+(YOU CANNOT GO THAT WAY)
+Break 1 [43]> :q
+[44]> *location*
+LIVING-ROOM
+[45]> (look)
+(YOU ARE IN THE LIVING ROOM. A WIZARD IS SNORING LOUDLY ON THE CROUCH THERE IS A DOOR
+ GOING WEST FROM HERE. THERE IS A LADDER GOING UPSTAIRS FROM HERE. YOU SEE A WHISKEY ON
+ THE FLOOR YOU SEE A BUCKET ON THE FLOOR)
+[46]> 
+
+(find west (cdr (assoc *location* *nodes*)) :key #'cadr))
+
+*** - SYSTEM::READ-EVAL-PRINT: variable WEST has no value
+The following restarts are available:
+USE-VALUE      :R1      Input a value to be used instead of WEST.
+STORE-VALUE    :R2      Input a new value for WEST.
+ABORT          :R3      Abort main loop
+Break 1 [47]> (find 'west (cdr (assoc *location* *nodes*)) :key #'cadr))
+NIL
+Break 1 [47]> 
+*** - READ from
+       #<INPUT CONCATENATED-STREAM #<INPUT STRING-INPUT-STREAM>
+         #<IO TWO-WAY-STREAM
+           #<IO ECHO-STREAM #<IO TERMINAL-STREAM>
+             #<OUTPUT BUFFERED FILE-STREAM CHARACTER #P"chapter-5.txt">>
+           #<OUTPUT BROADCAST-STREAM #<IO TERMINAL-STREAM>
+             #<OUTPUT BUFFERED FILE-STREAM CHARACTER #P"chapter-5.txt">>>>
+      : an object cannot start with #\)
+The following restarts are available:
+ABORT          :R1      Abort debug loop
+ABORT          :R2      Abort main loop
+Break 2 [48]> :q
+[49]> (find 'west (cdr (assoc *location* *nodes*)) :key #'cadr)
+NIL
+[50]> (assoc *location* *nodes*)
+(LIVING-ROOM (YOU ARE IN THE LIVING ROOM. A WIZARD IS SNORING LOUDLY ON THE CROUCH))
+[51]> (defun walk (direction)
+  (let ((next (find direction (cdr (assoc *location* *edges*)) :key #'cadr)))
+    (if next
+      (progn (setf *location* (car next))
+             (look))
+      '(you cannot go that way)
+    )))
+WALK
+[52]> (walk 'west)
+(YOU ARE IN BEAUTIFUL GARDEN. THERE IS A WELL IN FRONT OF YOU THERE IS A DOOR GOING EAST
+ FROM HERE. YOU SEE A FROG ON THE FLOOR YOU SEE A CHAIN ON THE FLOOR)
+[53]> 
+
+
+
+*object-location*
+
+*** - SYSTEM::READ-EVAL-PRINT: variable *OBJECT-LOCATION* has no value
+The following restarts are available:
+USE-VALUE      :R1      Input a value to be used instead of *OBJECT-LOCATION*.
+STORE-VALUE    :R2      Input a new value for *OBJECT-LOCATION*.
+ABORT          :R3      Abort main loop
+Break 1 [54]> *object-locations*
+((WHISKEY LIVING-ROOM) (BUCKET LIVING-ROOM) (CHAIN GARDEN) (FROG GARDEN))
+Break 1 [54]> :q
+[55]> 
+
+
+(defun pickup (object)
+
+  (cond ((member object (objects-at *location* *objects* *object-locations*))
+         (push (list object 'body) *object-locations*)
+         `(you are now carrying the ,object))
+        (t `(you cannot get the ,object))))
+PICKUP
+[56]> (look)
+(YOU ARE IN BEAUTIFUL GARDEN. THERE IS A WELL IN FRONT OF YOU THERE IS A DOOR GOING EAST
+ FROM HERE. YOU SEE A FROG ON THE FLOOR YOU SEE A CHAIN ON THE FLOOR)
+[57]> (walk 'east)
+(YOU ARE IN THE LIVING ROOM. A WIZARD IS SNORING LOUDLY ON THE CROUCH THERE IS A DOOR
+ GOING WEST FROM HERE. THERE IS A LADDER GOING UPSTAIRS FROM HERE. YOU SEE A WHISKEY ON
+ THE FLOOR YOU SEE A BUCKET ON THE FLOOR)
+[58]> (pickup 'whiskey)
+(YOU ARE NOW CARRYING THE WHISKEY)
+[59]> *object-locations*
+((WHISKEY BODY) (WHISKEY LIVING-ROOM) (BUCKET LIVING-ROOM) (CHAIN GARDEN) (FROG GARDEN))
+[60]> 
+
+
+(defun inventory ()
+  (cons 'items- (object-at 'body *objects* *object-locations*)))
+INVENTORY
+[61]> (inventory)
+
+*** - EVAL: undefined function OBJECT-AT
+The following restarts are available:
+USE-VALUE      :R1      Input a value to be used instead of (FDEFINITION 'OBJECT-AT).
+RETRY          :R2      Retry
+STORE-VALUE    :R3      Input a new value for (FDEFINITION 'OBJECT-AT).
+ABORT          :R4      Abort main loop
+Break 1 [62]> (defun inventory ()
+  (cons 'items- (objects-at 'body *objects* *object-locations*)))
+INVENTORY
+Break 1 [62]> (inventory)
+(ITEMS- WHISKEY)
+Break 1 [62]> :q
+[63]> 
+Bye.
