@@ -1,0 +1,251 @@
+;; Dribble of #<IO TERMINAL-STREAM> started on 2015-12-02 10:10:05.
+#<OUTPUT BUFFERED FILE-STREAM CHARACTER #P"chapter-6.txt">
+[2]> (progn (print "This")
+            (print "is")
+            (print "a")
+            (print "test"))
+
+"This" 
+"is" 
+"a" 
+"test" 
+"test"
+[3]> (progn (prin1 "This")
+            (prin1 "is")
+            (prin1 "a")
+            (prin1 "test"))
+"This""is""a""test"
+"test"
+[4]> 
+
+
+(defun say-hello ()
+  (print "Please type your name:")
+  (let ((name (read)))
+    (print "Nice to meet you, ")
+    (print name)
+  ))
+SAY-HELLO
+[5]> (say-hello)
+
+"Please type your name:" yatin
+
+"Nice to meet you, " 
+YATIN 
+YATIN
+[6]> (say-hello)
+
+"Please type your name:" "bob"
+"Nice to meet you, " 
+"bob" 
+"bob"
+[7]> 
+
+(print '#\a)
+
+#\a 
+#\a
+[8]> (print '#\newline)
+
+#\Newline 
+#\Newline
+[9]> (print '#\sapce)
+
+*** - READ from
+       #<INPUT CONCATENATED-STREAM #<INPUT STRING-INPUT-STREAM>
+         #<IO TWO-WAY-STREAM
+           #<IO ECHO-STREAM #<IO TERMINAL-STREAM>
+             #<OUTPUT BUFFERED FILE-STREAM CHARACTER #P"chapter-6.txt">>
+           #<OUTPUT BROADCAST-STREAM #<IO TERMINAL-STREAM>
+             #<OUTPUT BUFFERED FILE-STREAM CHARACTER #P"chapter-6.txt">>>>
+      : there is no character with name "sAPCE"
+The following restarts are available:
+ABORT          :R1      Abort main loop
+Break 1 [10]> (print '#\space)
+
+#\Space 
+#\Space
+Break 1 [10]> (print '#\tab)
+
+#\Tab 
+#\Tab
+Break 1 [10]> 
+
+:q
+[11]> 
+
+
+
+(princ '"foo")
+foo
+"foo"
+[12]> (print '"foo")
+
+"foo" 
+"foo"
+[13]> 
+(print "foo")
+
+"foo" 
+"foo"
+[14]> (princ "foo")
+foo
+"foo"
+[15]> 
+
+
+
+(defun say-hello ()
+  (princ "Please type your name:")
+  (let ((name (read-line)))
+    (princ "Nice to meet you, ")
+    (princ name)
+  ))
+SAY-HELLO
+[16]> (say-hello)
+Please type your name:yatin sarbalia
+Nice to meet you, yatin sarbalia
+"yatin sarbalia"
+[17]> 
+
+
+(defparameter *foo* '(+ 1 2))
+*FOO*
+[18]> 
+
+(eval *foo*)
+3
+[19]> 
+
+# custom repl
+
+*** - READ from
+       #<INPUT CONCATENATED-STREAM #<INPUT STRING-INPUT-STREAM>
+         #<IO TWO-WAY-STREAM
+           #<IO ECHO-STREAM #<IO TERMINAL-STREAM>
+             #<OUTPUT BUFFERED FILE-STREAM CHARACTER #P"chapter-6.txt">>
+           #<OUTPUT BROADCAST-STREAM #<IO TERMINAL-STREAM>
+             #<OUTPUT BUFFERED FILE-STREAM CHARACTER #P"chapter-6.txt">>>>
+      : objects printed as # in view of *PRINT-LEVEL* cannot be read back in
+The following restarts are available:
+ABORT          :R1      Abort main loop
+Break 1 [20]> 
+
+
+
+:q
+[21]> 
+
+
+
+(defun game-repl ()
+  (loop (print (eval (read))))
+)
+GAME-REPL
+[22]> (game-repl)
+(look)
+*** - EVAL: undefined function LOOK
+The following restarts are available:
+USE-VALUE      :R1      Input a value to be used instead of (FDEFINITION 'LOOK).
+RETRY          :R2      Retry
+STORE-VALUE    :R3      Input a new value for (FDEFINITION 'LOOK).
+ABORT          :R4      Abort main loop
+Break 1 [23]> :q
+[24]> (game-repl)
+
+*** - Ctrl-C: User break
+The following restarts are available:
+ABORT          :R1      Abort main loop
+Break 1 [25]> :q
+[26]> (game-repl)
+
+*** - Ctrl-C: User break
+The following restarts are available:
+ABORT          :R1      Abort main loop
+Break 1 [27]> :a
+[28]> 
+
+
+
+(defun game-repl ()
+
+  (let ((cmd (game-read)))
+     (unless (eq (car cmd) 'quit)
+       (game-print (game-eval cmd))
+       (game-repl))))
+GAME-REPL
+[29]> 
+
+
+(read-line)
+abc
+"abc" ;
+NIL
+[30]> (concatenate 'string "(" (read-line) ")")
+abc
+"(abc)"
+[31]> (concatenate "(" (read-line) ")")
+abc
+
+*** - There are no sequences of type "("
+The following restarts are available:
+ABORT          :R1      Abort main loop
+Break 1 [32]> :q
+[33]> 
+
+
+(concatenate 'string "(" (read-line) ")")
+abc
+"(abc)"
+[34]> (read-from-string (concatenate 'string "(" (read-line) ")"))
+abc
+(ABC) ;
+5
+[35]> 
+
+
+(defun game-read ()
+  (let ((cmd (read-from-string (concatenate 'string "(" (read-line) ")"))))
+    (flet ((quote-it (x)
+             (list 'quote x)))
+      (cons (car cmd) (mapcar #'quote-it (cdr cmd)))))))
+GAME-READ
+[36]> (game-read)
+walk east
+(WALK 'EAST)
+[37]> 
+
+
+
+(defparameter *allowed-commands* (look walk pickup inventory))
+
+*** - EVAL: undefined function LOOK
+The following restarts are available:
+USE-VALUE      :R1      Input a value to be used instead of (FDEFINITION 'LOOK).
+RETRY          :R2      Retry
+STORE-VALUE    :R3      Input a new value for (FDEFINITION 'LOOK).
+ABORT          :R4      Abort main loop
+Break 1 [38]> (defparameter *allowed-commands* '(look walk pickup inventory))
+*ALLOWED-COMMANDS*
+Break 1 [38]> 
+
+
+
+(defun game-eval (sexp)
+  (if (member (car sexp) *allowed-commands*)
+      (eval sexp)
+      '(i do not know that command)))
+GAME-EVAL
+Break 1 [38]> 
+
+
+
+
+(prin1-to-string '(hey how are you))
+"(HEY HOW ARE YOU)"
+Break 1 [38]> :q
+[39]> 
+(string-trim "()" (prin1-to-string '(hey how are you)))
+"HEY HOW ARE YOU"
+[40]> 
+Bye.
